@@ -1,0 +1,97 @@
+{
+    "name": "honed/persist",
+    "description": "Create stores for persisting common data to a single key.",
+    "keywords": [
+        "honed",
+        "laravel",
+        "persist",
+        "inertia"
+    ],
+    "homepage": "https://github.com/honedlabs/persist",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Joshua Wallace",
+            "homepage": "https://joshua-wallace.com",
+            "email": "josh@joshua-wallace.com",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": "^8.2",
+        "illuminate/contracts": "^11.0||^12.0",
+        "illuminate/support": "^11.0||^12.0"
+    },
+    "require-dev": {
+        "larastan/larastan": "^3.0",
+        "laravel/pint": "^1.18",
+        "nunomaduro/collision": "^8.1",
+        "orchestra/testbench": "^9.0.0||^10.0.0",
+        "pestphp/pest": "^3.5.1",
+        "pestphp/pest-plugin-arch": "^3.0.0",
+        "phpstan/extension-installer": "^1.4.3",
+        "phpstan/phpstan-deprecation-rules": "^2.0.1",
+        "phpstan/phpstan-phpunit": "^2.0.3",
+        "pestphp/pest-plugin-laravel": "^3.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Honed\\Persist\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Honed\\Persist\\Tests\\": "tests/",
+            "Workbench\\App\\": "workbench/app/",
+            "Workbench\\Database\\Factories\\": "workbench/database/factories/",
+            "Workbench\\Database\\Seeders\\": "workbench/database/seeders/"
+        }
+    },
+    "scripts": {
+        "post-autoload-dump": [
+            "@clear",
+            "@prepare",
+            "@composer run prepare"
+        ],
+        "clear": "@php vendor/bin/testbench package:purge-skeleton --ansi",
+        "prepare": "@php vendor/bin/testbench package:discover --ansi",
+        "build": "@php vendor/bin/testbench workbench:build --ansi",
+        "serve": [
+            "Composer\\Config::disableProcessTimeout",
+            "@build",
+            "@php vendor/bin/testbench serve --ansi"
+        ],
+        "analyse": "vendor/bin/phpstan analyse",
+        "test": "vendor/bin/pest",
+        "test-coverage": "vendor/bin/pest --coverage",
+        "format": "vendor/bin/pint",
+        "check": [
+            "@composer run analyse",
+            "@composer run test",
+            "@composer run format"
+        ],
+        "lint": [
+            "@php vendor/bin/pint --ansi",
+            "@php vendor/bin/phpstan analyse --verbose --ansi"
+        ]
+    },
+    "config": {
+        "sort-packages": true,
+        "allow-plugins": {
+            "pestphp/pest-plugin": true,
+            "phpstan/extension-installer": true
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Honed\\Persist\\PersistServiceProvider"
+            ],
+            "aliases": {
+                "Persist": "Honed\\Persist\\Facades\\Persist"
+            }
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}
