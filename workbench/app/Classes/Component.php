@@ -37,9 +37,11 @@ class Component implements CanPersistData
     }
 
     /**
-     * Get the persistable properties.
+     * Define the properties to persist.
+     *
+     * @return array<int, string>
      */
-    public function persistables(): array
+    public function persist(): array
     {
         return [
             'sortQuery',

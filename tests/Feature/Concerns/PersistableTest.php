@@ -26,9 +26,28 @@ it('has default driver', function () {
         ->getDefaultDriver()->toBe('database');
 });
 
+it('gets drivers', function () {
+    expect($this->component)
+        ->getDrivers()->toBeEmpty()
+        ->persistSortQuery('cookie')->toBe($this->component)
+        ->getDrivers()->toBeEmpty()
+        ->getSortQueryDriver()->not->toBeNull()
+        ->getDrivers()
+        ->scoped(fn ($drivers) => $drivers
+            ->toBeArray()
+            ->toHaveCount(1)
+            ->toHaveKey('cookie')
+            ->{'cookie'}
+            ->scoped(fn ($driver) => $driver
+                ->toBeInstanceOf(Decorator::class)
+                ->getDriver()->toBeInstanceOf(CookieDriver::class)
+            )
+        );
+});
+
 it('sets persists', function () {
     expect($this->component)
-        ->persistables()->toEqual(['sortQuery', 'search', 'other'])
+        ->persist()->toEqual(['sortQuery', 'search', 'other'])
         ->isPersistable('sortQuery')->toBeTrue()
         ->isPersistable('test')->toBeFalse();
 });

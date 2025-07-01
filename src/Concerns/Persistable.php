@@ -25,12 +25,12 @@ trait Persistable
      *
      * @var array<string, string|bool>
      */
-    protected array $persistables = [];
+    protected array $persist = [];
 
     /**
      * The available drivers.
      *
-     * @var array<int, Decorator>
+     * @var array<string, Decorator>
      */
     protected array $drivers = [];
 
@@ -58,11 +58,11 @@ trait Persistable
     }
 
     /**
-     * Define the names of different persistable properties.
+     * Define the properties to persist.
      *
      * @return array<int, string>
      */
-    abstract public function persistables(): array;
+    abstract public function persist(): array;
 
     /**
      * Set the name of the key to use when persisting data to a store.
@@ -124,7 +124,7 @@ trait Persistable
      */
     public function isPersisting(string $key): bool
     {
-        return (bool) ($this->persistables[$key] ?? false);
+        return (bool) ($this->persist[$key] ?? false);
     }
 
     /**
@@ -148,11 +148,21 @@ trait Persistable
      */
     public function getDriverFor(string $key): ?Decorator
     {
-        if (! isset($this->persistables[$key])) {
+        if (! isset($this->persist[$key])) {
             return null;
         }
 
-        return $this->getDriver($this->persistables[$key]);
+        return $this->getDriver($this->persist[$key]);
+    }
+
+    /**
+     * Get the drivers being used for persisting data.
+     *
+     * @return array<string, Decorator>
+     */
+    public function getDrivers(): array
+    {
+        return $this->drivers;
     }
 
     /**
@@ -162,7 +172,7 @@ trait Persistable
      */
     public function setDriver(string $name, string|bool $driver): self
     {
-        $this->persistables[$name] = $driver;
+        $this->persist[$name] = $driver;
 
         return $this;
     }
@@ -172,7 +182,7 @@ trait Persistable
      */
     public function isPersistable(string $key): bool
     {
-        return in_array($key, $this->persistables());
+        return in_array($key, $this->persist());
     }
 
     /**
@@ -230,7 +240,7 @@ trait Persistable
     /**
      * Call a persistable method.
      *
-     * @param  array{0: string, 1: string, 2: string|null}  $call
+     * @param  array{0: string, 1: string, 2: string|bool|null}  $call
      * @param  array<array-key, mixed>  $parameters
      *
      * @throws BadMethodCallException
