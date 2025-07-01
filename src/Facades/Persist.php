@@ -24,7 +24,7 @@ use Illuminate\Support\Facades\Facade;
  * @method static string getName() Get the name of the driver (delegated to driver)
  *
  * @see PersistManager
- * @see \Honed\Persist\Drivers\Driver
+ * @see \Honed\Persist\Drivers\Decorator
  */
 class Persist extends Facade
 {
