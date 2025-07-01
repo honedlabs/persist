@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Honed\Persist\Drivers;
 
+use Honed\Persist\PersistData;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Traits\Macroable;
 
 class Decorator
@@ -23,18 +25,32 @@ class Decorator
     protected Driver $driver;
 
     /**
+     * The data to persist.
+     *
+     * @var array<string,mixed>
+     */
+    protected array $data = [];
+
+    /**
+     * The resolved data from the driver.
+     *
+     * @var array<string,mixed>|null
+     */
+    protected ?array $resolved = null;
+
+    /**
      * Create a new decorator instance.
      */
     public function __construct(
         string $scope,
         Driver $driver,
     ) {
-        $this->scope = $scope;
-        $this->driver = $driver;
+        $this->setScope($scope);
+        $this->setDriver($driver);
     }
 
     /**
-     * Dynamically create a pending feature interaction.
+     * Dynamically handle macro calls.
      *
      * @param  string  $name
      * @param  array<mixed>  $parameters
@@ -58,6 +74,14 @@ class Decorator
     }
 
     /**
+     * Set the scope of the decorator.
+     */
+    public function setScope(string $scope): void
+    {
+        $this->scope = $scope;
+    }
+
+    /**
      * Get the underlying driver.
      */
     public function getDriver(): Driver
@@ -66,22 +90,42 @@ class Decorator
     }
 
     /**
-     * Get a value from the store.
+     * Set the underlying driver.
      */
-    public function get(?string $key = null): mixed
+    public function setDriver(Driver $driver): void
     {
-        return $this->getDriver()->get($this->getScope(), $key);
+        $this->driver = $driver;
     }
 
     /**
-     * Put a value into the store.
+     * Get a value from the store.
      *
-     * @param  string|array<string,mixed>  $key
-     * @param  ($key is array ? array<string,mixed> : mixed)  $value
+     * @return ($key is null ? array<string,mixed> : mixed)
      */
-    public function put(string|array $key, mixed $value = null): self
+    public function get(?string $key = null): mixed
     {
-        $this->getDriver()->put($this->getScope(), $key, $value);
+        if (! isset($this->resolved)) {
+            $this->resolved = $this->getDriver()->get($this->getScope());
+        }
+
+        return match (true) {
+            $key !== null => Arr::get($this->resolved, $key, null),
+            default => $this->resolved,
+        };
+    }
+
+    /**
+     * Put a value into the internal store.
+     *
+     * @param  string|array<string,mixed>|PersistData  $key
+     */
+    public function put(string|array|PersistData $key, mixed $value = null): static
+    {
+        $this->data = match (true) {
+            is_array($key) => [...$this->data, ...$key],
+            $key instanceof PersistData => [...$this->data, ...$key->toArray()],
+            default => [...$this->data, $key => $value instanceof PersistData ? $value->toArray() : $value],
+        };
 
         return $this;
     }
@@ -91,6 +135,6 @@ class Decorator
      */
     public function persist(): void
     {
-        $this->getDriver()->persist($this->getScope());
+        $this->getDriver()->put($this->getScope(), $this->data);
     }
 }

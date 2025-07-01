@@ -49,7 +49,7 @@ class CookieDriver extends Driver
      *
      * @return array<string,mixed>
      */
-    public function value(string $scope): array
+    public function get(string $scope): array
     {
         /** @var array<string,mixed>|null $data */
         $data = json_decode(
@@ -61,13 +61,15 @@ class CookieDriver extends Driver
 
     /**
      * Persist the data to a cookie.
+     *
+     * @param  array<string,mixed>  $value
      */
-    public function persist(string $scope): void
+    public function put(string $scope, array $value): void
     {
         match (true) {
-            empty($this->data) => $this->cookieJar->forget($scope),
+            empty($value) => $this->cookieJar->forget($scope),
             default => $this->cookieJar->queue(
-                $scope, json_encode($this->data, JSON_THROW_ON_ERROR), $this->lifetime
+                $scope, json_encode($value, JSON_THROW_ON_ERROR), $this->lifetime
             ),
         };
     }

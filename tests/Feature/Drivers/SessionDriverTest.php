@@ -12,11 +12,7 @@ beforeEach(function () {
 
     $this->scope = 'component';
 
-    $this->key = 'key';
-
-    Session::put($this->scope, [
-        $this->key => (new SearchData('test', ['id', 'name']))->toArray(),
-    ]);
+    Session::put($this->scope, (new SearchData('test', ['id', 'name']))->toArray());
 });
 
 it('has a name', function () {
@@ -24,31 +20,26 @@ it('has a name', function () {
         ->getName()->toEqual(config('persist.drivers.session.driver'));
 });
 
-it('gets persisted value', function () {
+it('gets value', function () {
     expect($this->driver)
         ->get($this->scope)->toEqual([
-            $this->key => [
-                'term' => 'test',
-                'cols' => 'id,name',
-            ],
+            'term' => 'test',
+            'cols' => 'id,name',
         ]);
 });
 
-it('persists value into store', function () {
+it('sets value', function () {
     expect($this->driver)
-        ->put($this->scope, 'term', 'test');
-
-    $this->driver->persist($this->scope);
+        ->put($this->scope, (new SearchData('test', ['id', 'name']))->toArray());
 
     expect(Session::get($this->scope))
         ->toEqual([
-            $this->scope => [
-                'term' => 'test',
-            ],
+            'term' => 'test',
+            'cols' => 'id,name',
         ]);
 });
 
-it('sets session', function () {
+it('has session', function () {
     expect($this->driver)
         ->session(app(SessionManager::class))
         ->getSession()->toBe(app(SessionManager::class));

@@ -28,7 +28,7 @@ class SessionDriver extends Driver
      *
      * @return array<string,mixed>
      */
-    public function value(string $scope): array
+    public function get(string $scope): array
     {
         /** @var array<string,mixed>|null $data */
         $data = $this->session->get($scope, []);
@@ -38,12 +38,14 @@ class SessionDriver extends Driver
 
     /**
      * Persist the data to the session.
+     *
+     * @param  array<string,mixed>  $value
      */
-    public function persist(string $scope): void
+    public function put(string $scope, array $value): void
     {
         match (true) {
-            empty($this->data) => $this->session->forget($scope),
-            default => $this->session->put($scope, $this->data),
+            empty($value) => $this->session->forget($scope),
+            default => $this->session->put($scope, $value),
         };
     }
 

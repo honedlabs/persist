@@ -8,13 +8,9 @@ use Workbench\App\Persists\Data\SearchData;
 beforeEach(function () {
     $this->driver = Persist::driver(config('persist.drivers.array.driver'));
 
-    $this->key = 'component';
+    $this->scope = 'component';
 
-    $this->scope = 'key';
-
-    $this->driver->put($this->key, $this->scope, new SearchData('test', ['id', 'name']));
-
-    $this->driver->persist($this->key);
+    $this->driver->put($this->scope, (new SearchData('test', ['id', 'name']))->toArray());
 });
 
 it('has a name', function () {
@@ -22,30 +18,21 @@ it('has a name', function () {
         ->getName()->toEqual(config('persist.drivers.array.driver'));
 });
 
-it('gets persisted value', function () {
+it('gets value', function () {
     expect($this->driver)
-        ->get($this->key)->toEqual([
-            $this->scope => [
-                'term' => 'test',
-                'cols' => 'id,name',
-            ],
+        ->get($this->scope)->toEqual([
+            'term' => 'test',
+            'cols' => 'id,name',
         ]);
 });
 
-it('persists value into store', function () {
+it('sets value', function () {
     expect($this->driver)
-        ->put($this->key, 'term', 'test');
-
-    $this->driver->persist($this->key);
-
-    $this->driver->resolve($this->key);
+        ->put($this->scope, (new SearchData('test', ['id', 'name']))->toArray());
 
     expect($this->driver)
-        ->get($this->key)->toEqual([
+        ->get($this->scope)->toEqual([
             'term' => 'test',
-            $this->scope => [
-                'term' => 'test',
-                'cols' => 'id,name',
-            ],
+            'cols' => 'id,name',
         ]);
 });

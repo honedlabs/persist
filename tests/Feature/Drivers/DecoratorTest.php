@@ -6,6 +6,7 @@ use Honed\Persist\Drivers\Decorator;
 use Honed\Persist\Drivers\Driver;
 use Honed\Persist\Facades\Persist;
 use Illuminate\Support\Facades\Session;
+use Workbench\App\Persists\Data\SearchData;
 
 beforeEach(function () {
     $this->scope = 'component';
@@ -15,7 +16,7 @@ beforeEach(function () {
         Persist::driver(config('persist.drivers.session.driver')),
     );
 
-    Session::put($this->scope, ['term' => 'test']);
+    Session::put($this->scope, (new SearchData('test', ['id', 'name']))->toArray());
 });
 
 it('has a scope', function () {
@@ -30,7 +31,10 @@ it('has a driver', function () {
 
 it('proxies get', function () {
     expect($this->decorator)
-        ->get()->toEqual(['term' => 'test'])
+        ->get()->toEqual([
+            'term' => 'test',
+            'cols' => 'id,name',
+        ])
         ->get('term')->toBe('test');
 });
 
@@ -41,9 +45,7 @@ it('proxies put', function () {
 
     expect(Session::get($this->scope))
         ->toEqual([
-            $this->scope => [
-                'term' => 'test',
-            ],
+            'term' => 'test',
         ]);
 });
 

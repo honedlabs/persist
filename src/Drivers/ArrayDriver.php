@@ -11,26 +11,25 @@ class ArrayDriver extends Driver
      *
      * @var array<string,array<string,mixed>>
      */
-    protected array $persisted = [];
+    protected array $store = [];
 
     /**
      * Retrieve the data from the driver and put it in memory for the given key.
      *
      * @return array<string,mixed>
      */
-    public function value(string $scope): array
+    public function get(string $scope): array
     {
-        return $this->persisted[$scope] ?? [];
+        return $this->store[$scope] ?? [];
     }
 
     /**
      * Persist the data to the array.
+     *
+     * @param  array<string,mixed>  $value
      */
-    public function persist(string $scope): void
+    public function put(string $scope, array $value): void
     {
-        /** @var array<string,mixed> $data */
-        $data = $this->data[$scope] ?? [];
-
-        $this->persisted[$scope] = $data;
+        $this->store[$scope] = $value;
     }
 }
