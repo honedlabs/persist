@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Honed\Persist;
 
 use Closure;
+use Honed\Persist\Contracts\AccessesRequest;
+use Honed\Persist\Contracts\AccessesSession;
 use Honed\Persist\Drivers\ArrayDriver;
 use Honed\Persist\Drivers\CookieDriver;
 use Honed\Persist\Drivers\Driver;
@@ -40,6 +42,20 @@ class PersistManager
      * @var array<string, Closure(string, Container): Driver>
      */
     protected $customCreators = [];
+
+    /**
+     * The session to pass to drivers.
+     *
+     * @var SessionManager|null
+     */
+    protected $session;
+
+    /**
+     * The request to pass to drivers.
+     *
+     * @var Request|null
+     */
+    protected $request;
 
     /**
      * Create a new view resolver.
@@ -97,6 +113,42 @@ class PersistManager
         return new SessionDriver(
             $name, $this->getSession()
         );
+    }
+
+    /**
+     * Set the session to use for all drivers.
+     *
+     * @return $this
+     */
+    public function session(SessionManager $session): static
+    {
+        $this->session = $session;
+
+        foreach ($this->drivers as $driver) {
+            if ($driver instanceof AccessesSession) {
+                $driver->session($session);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * Set the request to use for all drivers.
+     *
+     * @return $this
+     */
+    public function request(Request $request): static
+    {
+        foreach ($this->drivers as $driver) {
+            if ($driver instanceof AccessesRequest) {
+                $driver->request($request);
+            }
+        }
+
+        $this->request = $request;
+
+        return $this;
     }
 
     /**
@@ -249,7 +301,8 @@ class PersistManager
     protected function getRequest(): Request
     {
         /** @var Request */
-        return $this->container['request']; // @phpstan-ignore-line offsetAccess.nonOffsetAccessible
+        return $this->request ??
+            $this->container['request']; // @phpstan-ignore-line offsetAccess.nonOffsetAccessible
     }
 
     /**
@@ -258,6 +311,7 @@ class PersistManager
     protected function getSession(): SessionManager
     {
         /** @var SessionManager */
-        return $this->container['session']; // @phpstan-ignore-line offsetAccess.nonOffsetAccessible
+        return $this->session ??
+            $this->container['session']; // @phpstan-ignore-line offsetAccess.nonOffsetAccessible
     }
 }

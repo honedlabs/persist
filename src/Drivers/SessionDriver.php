@@ -4,10 +4,11 @@ declare(strict_types=1);
 
 namespace Honed\Persist\Drivers;
 
+use Honed\Persist\Contracts\AccessesSession;
 use Illuminate\Contracts\Session\Session;
 use Illuminate\Session\SessionManager;
 
-class SessionDriver extends Driver
+class SessionDriver extends Driver implements AccessesSession
 {
     /**
      * The session manager to use for the driver.
@@ -54,7 +55,7 @@ class SessionDriver extends Driver
      *
      * @return $this
      */
-    public function session(SessionManager $session): self
+    public function session(SessionManager $session): static
     {
         $this->session = $session;
 

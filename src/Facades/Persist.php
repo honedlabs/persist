@@ -17,10 +17,11 @@ use Illuminate\Support\Facades\Facade;
  * @method static \Honed\Persist\PersistManager forgetDriver(string|array<int, string>|null $name = null) Unset the given driver instances
  * @method static \Honed\Persist\PersistManager forgetDrivers() Forget all of the resolved driver instances
  * @method static \Honed\Persist\PersistManager extend(string $driver, \Closure $callback) Register a custom driver creator closure
- * @method static mixed get(string $scope, ?string $key = null) Get a value from the resolved data (delegated to driver)
- * @method static \Honed\Persist\Drivers\Driver put(string $scope, string|array<string, mixed> $key, mixed $value = null) Put the value for the given key in preparation to persist it (delegated to driver)
- * @method static array<string,mixed> value(string $scope) Retrieve the data from the driver and set it in memory for the given key (delegated to driver)
- * @method static void persist(string $scope) Persist the current data to the driver (delegated to driver)
+ * @method static \Honed\Persist\PersistManager session(\Illuminate\Session\SessionManager $session) Set the session to use for all drivers
+ * @method static \Honed\Persist\PersistManager request(\Illuminate\Http\Request $request) Set the request to use for all drivers
+ * @method static array<string,mixed> get(string $scope) Retrieve the data from the driver and set it in memory for the given scope (delegated to driver)
+ * @method static void put(string $scope, array<string,mixed> $value) Persist the current data to the driver (delegated to driver)
+ * @method static string getName() Get the name of the driver (delegated to driver)
  *
  * @see PersistManager
  * @see \Honed\Persist\Drivers\Driver

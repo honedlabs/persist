@@ -4,10 +4,11 @@ declare(strict_types=1);
 
 namespace Honed\Persist\Drivers;
 
+use Honed\Persist\Contracts\AccessesRequest;
 use Illuminate\Cookie\CookieJar;
 use Illuminate\Http\Request;
 
-class CookieDriver extends Driver
+class CookieDriver extends Driver implements AccessesRequest
 {
     /**
      * The cookie jar to use for the driver.
@@ -79,7 +80,7 @@ class CookieDriver extends Driver
      *
      * @return $this
      */
-    public function request(Request $request): self
+    public function request(Request $request): static
     {
         $this->request = $request;
 
@@ -99,7 +100,7 @@ class CookieDriver extends Driver
      *
      * @return $this
      */
-    public function cookieJar(CookieJar $cookieJar): self
+    public function cookieJar(CookieJar $cookieJar): static
     {
         $this->cookieJar = $cookieJar;
 
@@ -119,7 +120,7 @@ class CookieDriver extends Driver
      *
      * @return $this
      */
-    public function lifetime(int $seconds): self
+    public function lifetime(int $seconds): static
     {
         $this->lifetime = $seconds;
 

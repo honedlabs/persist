@@ -7,6 +7,8 @@ use Honed\Persist\Drivers\CookieDriver;
 use Honed\Persist\Drivers\SessionDriver;
 use Honed\Persist\PersistManager;
 use Illuminate\Contracts\Container\Container;
+use Illuminate\Http\Request;
+use Illuminate\Session\SessionManager;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Config;
 
@@ -51,6 +53,62 @@ it('extends and forgets drivers', function () {
         ->driver()->toBeInstanceOf(SessionDriver::class)
         ->forgetDriver('custom')->toBe($this->manager)
         ->driver('custom')->toBeInstanceOf(ArrayDriver::class);
+});
+
+it('sets session in new drivers', function () {
+    $session = App::make(SessionManager::class);
+
+    expect($this->manager)
+        ->session($session)->toBe($this->manager);
+
+    expect($this->manager->driver(config('persist.drivers.session.driver'))->getSession())
+        ->toBeInstanceOf(SessionManager::class)
+        ->getName()->toBe('laravel_session');
+});
+
+it('updates session in existing drivers', function () {
+    $driver = $this->manager->driver(config('persist.drivers.session.driver'));
+
+    expect($driver->getSession())
+        ->toBeInstanceOf(SessionManager::class)
+        ->getName()->toBe('laravel_session');
+
+    $session = App::make(SessionManager::class);
+
+    expect($this->manager)
+        ->session($session)->toBe($this->manager);
+
+    expect($driver->getSession())
+        ->toBeInstanceOf(SessionManager::class)
+        ->getName()->toBe('laravel_session');
+});
+
+it('sets request in new drivers', function () {
+    $request = Request::create('/test');
+
+    expect($this->manager)
+        ->request($request)->toBe($this->manager);
+
+    expect($this->manager->driver(config('persist.drivers.cookie.driver'))->getRequest())
+        ->toBeInstanceOf(Request::class)
+        ->url()->toBe(url('/test'));
+});
+
+it('updates request in existing drivers', function () {
+    $driver = $this->manager->driver(config('persist.drivers.cookie.driver'));
+
+    expect($driver->getRequest())
+        ->toBeInstanceOf(Request::class)
+        ->url()->toBe(url('/'));
+
+    $request = Request::create('/test');
+
+    expect($this->manager)
+        ->request($request)->toBe($this->manager);
+
+    expect($driver->getRequest())
+        ->toBeInstanceOf(Request::class)
+        ->url()->toBe(url('/test'));
 });
 
 it('delegates to driver', function () {
