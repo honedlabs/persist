@@ -274,7 +274,7 @@ class PersistManager
     protected function getDatabaseManager(): DatabaseManager
     {
         /** @var DatabaseManager */
-        return $this->container['db']; // @phpstan-ignore-line offsetAccess.nonOffsetAccessible
+        return $this->container['db'];
     }
 
     /**
@@ -283,7 +283,7 @@ class PersistManager
     protected function getDispatcher(): Dispatcher
     {
         /** @var Dispatcher */
-        return $this->container['events']; // @phpstan-ignore-line offsetAccess.nonOffsetAccessible
+        return $this->container['events'];
     }
 
     /**
@@ -292,7 +292,7 @@ class PersistManager
     protected function getCookieJar(): CookieJar
     {
         /** @var CookieJar */
-        return $this->container['cookie']; // @phpstan-ignore-line offsetAccess.nonOffsetAccessible
+        return $this->container['cookie'];
     }
 
     /**
