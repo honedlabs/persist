@@ -15,7 +15,7 @@ class PersistServiceProvider extends ServiceProvider
     {
         $this->mergeConfigFrom(__DIR__.'/../config/persist.php', 'persist');
 
-        $this->app->singleton(PersistManager::class, fn ($app) => new PersistManager($app));
+        $this->app->singleton(PersistManager::class);
     }
 
     /**
