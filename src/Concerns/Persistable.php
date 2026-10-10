@@ -202,9 +202,9 @@ trait Persistable
     protected function guessPersistKey(): string
     {
         return Str::of(static::class)
-            ->classBasename()
-            ->snake('_')
-            ->toString();
+            ->explode('\\')
+            ->map(fn (string $segment) => Str::snake($segment))
+            ->implode('.');
     }
 
     /**

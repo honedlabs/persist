@@ -14,7 +14,7 @@ beforeEach(function () {
 
 it('sets persist key', function () {
     expect($this->component)
-        ->getPersistKey()->toBe('component')
+        ->getPersistKey()->toBe('workbench.app.classes.component')
         ->persistKey('test')
         ->getPersistKey()->toBe('test');
 });
